@@ -11,7 +11,11 @@ interface EventDetails {
   notes?: string | undefined;
 }
 
-const EventForm: React.FC = () => {
+interface EventFormProps {
+  sessionId: string;
+}
+
+const EventForm: React.FC<EventFormProps> = ({ sessionId }) => {
   const [eventDetails, setEventDetails] = useState<EventDetails>({
     event: "",
     time: "",
@@ -19,6 +23,8 @@ const EventForm: React.FC = () => {
     date: "",
   });
   const router = useRouter();
+  // const { data: session } = useSession();
+  // console.log(session?.user.id);
 
   const createEvent = api.calendarEventRouter.create.useMutation({
     onSuccess: () => {
@@ -51,6 +57,7 @@ const EventForm: React.FC = () => {
         onSubmit={(e) => {
           e.preventDefault();
           createEvent.mutate({
+            userId: sessionId,
             event: eventDetails.event,
             time: eventDetails.time,
             date: eventDetails.date,

@@ -19,8 +19,17 @@ import { type AdapterAccount } from "next-auth/adapters";
  */
 export const createTable = pgTableCreator((name) => `our-calendar_${name}`);
 
+export const partnerships = createTable("partnership", {
+  uuid: uuid("uuid").defaultRandom(),
+  user1Id: varchar("user1Id", { length: 255 }).references(() => users.id),
+  user2Id: varchar("user2Id", { length: 255 }).references(() => users.id),
+});
+
 export const calendarEvents = createTable("calendarEvent", {
-  id: uuid("id").defaultRandom(),
+  uuid: uuid("uuid").defaultRandom(),
+  userId: varchar("userId", { length: 255 })
+    .notNull()
+    .references(() => users.id),
   date: timestamp("date", { mode: "date" }).notNull(),
   time: text("time"),
   event: text("event").notNull(),
