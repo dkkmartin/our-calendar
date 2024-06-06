@@ -6,13 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "@next/env": "^14.2.3",
     "@radix-ui/react-slot": "^1.0.2",
+    "@vercel/postgres": "^0.8.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "drizzle-orm": "^0.31.1",
     "lucide-react": "^0.387.0",
     "next": "14.2.3",
     "next-auth": "^4.24.7",
@@ -26,6 +31,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "drizzle-kit": "^0.22.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
     "postcss": "^8",
