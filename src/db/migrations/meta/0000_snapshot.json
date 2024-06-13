@@ -1,5 +1,5 @@
 {
-  "id": "a3ddf8ff-fcd9-4bb1-a206-c3f74ff87a5a",
+  "id": "8683a4e1-bdf7-4281-9914-3811f42d05e4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -28,7 +28,7 @@
         },
         "date": {
           "name": "date",
-          "type": "timestamp",
+          "type": "date",
           "primaryKey": false,
           "notNull": true
         },
