@@ -1,14 +1,26 @@
 "use client"
 
+import { getSpecificEntry } from "@/actions"
+import { currentPickedDateStore } from "@/lib/stores"
 import { entryType } from "@/types/entryType"
-import { FC, useState } from "react"
+import { FC, useEffect, useState } from "react"
 
-interface Props {
-  entries: entryType[]
-}
+const Entries: FC = () => {
+  const pickedDateStore = currentPickedDateStore((state) => state.date)
+  const [entryItems, setEntryItems] = useState<entryType[]>()
 
-const Entries: FC<Props> = ({ entries }) => {
-  const [entryItems, setEntryItems] = useState<entryType[]>(entries)
+  useEffect(() => {
+    async function getEntryData() {
+      const data = await getSpecificEntry(pickedDateStore!)
+      setEntryItems(data)
+    }
+    getEntryData()
+  }, [pickedDateStore])
+
+  useEffect(() => {
+    console.log(pickedDateStore)
+  }, [pickedDateStore])
+
   return (
     <section>
       {entryItems &&
