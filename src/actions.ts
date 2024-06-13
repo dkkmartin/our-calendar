@@ -1,7 +1,8 @@
+"use server"
+
 import db from "@/db/drizzle"
 import { calendarTable } from "@/db/schema/calendar"
 import { asc, eq } from "drizzle-orm"
-import { revalidatePath } from "next/cache"
 
 // Get all entries from db
 export const getEntries = async () => {
@@ -9,7 +10,17 @@ export const getEntries = async () => {
     .select()
     .from(calendarTable)
     .orderBy(asc(calendarTable.date))
+  return data
+}
 
+// Get specific entry from db
+export const getSpecificEntry = async (date: string) => {
+  console.log(date)
+  const data = await db
+    .select()
+    .from(calendarTable)
+    .where(eq(calendarTable.date, date))
+  console.log(data)
   return data
 }
 
@@ -20,7 +31,6 @@ export const createEntry = async (title: string, notes: string, date: Date) => {
     notes: notes,
     date: date.toISOString(),
   })
-  revalidatePath("/")
 }
 
 // Update entry from calendar
@@ -38,11 +48,9 @@ export const updateEntry = async (
       date: date.toISOString(),
     })
     .where(eq(calendarTable.id, id))
-  revalidatePath("/")
 }
 
 // Delete entry from calendar
 export const deleteEntry = async (id: number) => {
   await db.delete(calendarTable).where(eq(calendarTable.id, id))
-  revalidatePath("/")
 }
