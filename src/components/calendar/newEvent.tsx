@@ -31,12 +31,12 @@ export default function NewEvent({ date }: { date: string }) {
   })
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values)
-    createEntry(values.title, values.notes ? values.notes : "", values.date)
-    form.reset({
-      title: "",
-      notes: "",
-    })
+    createEntry(
+      values.title,
+      values.notes ?? "",
+      values.date,
+      values.time ?? ""
+    )
     router.push("/")
   }
 
@@ -67,6 +67,20 @@ export default function NewEvent({ date }: { date: string }) {
                 <Textarea {...field} />
               </FormControl>
               <FormDescription>Any notes for the event.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='time'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Time</FormLabel>
+              <FormControl>
+                <Input {...field} type='time' />
+              </FormControl>
+              <FormDescription>The time of the event.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
