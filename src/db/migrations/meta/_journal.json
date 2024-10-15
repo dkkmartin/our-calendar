@@ -8,6 +8,13 @@
       "when": 1718279304558,
       "tag": "0000_hot_molecule_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1729033817403,
+      "tag": "0001_bright_big_bertha",
+      "breakpoints": true
     }
   ]
 }

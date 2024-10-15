@@ -5,5 +5,6 @@ export const formSchema = z.object({
     message: "Title must contain at least 1 character",
   }),
   notes: z.string().optional(),
+  time: z.string().optional(),
   date: z.date(),
 })

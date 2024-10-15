@@ -5,7 +5,7 @@ import { calendarTable } from "@/db/schema/calendar"
 import { asc, eq } from "drizzle-orm"
 
 // Get all entries from db
-export const getEntries = async () => {
+export const getAllEntries = async () => {
   const data = await db
     .select()
     .from(calendarTable)
@@ -15,21 +15,25 @@ export const getEntries = async () => {
 
 // Get specific entry from db
 export const getSpecificEntry = async (date: string) => {
-  console.log(date)
   const data = await db
     .select()
     .from(calendarTable)
     .where(eq(calendarTable.date, date))
-  console.log(data)
   return data
 }
 
 // Create new calendar entry to db
-export const createEntry = async (title: string, notes: string, date: Date) => {
+export const createEntry = async (
+  title: string,
+  notes: string,
+  date: Date,
+  time: string
+) => {
   await db.insert(calendarTable).values({
     title: title,
     notes: notes,
     date: date.toISOString(),
+    time: time || null,
   })
 }
 
