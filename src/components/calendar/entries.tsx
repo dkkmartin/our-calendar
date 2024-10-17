@@ -25,8 +25,7 @@ const Entries: FC = () => {
   }
 
   const fetchEntryData = useCallback(async () => {
-    //@ts-ignore
-    const data = await getSpecificEntries(pickedDateStore!)
+    const data = await getSpecificEntries(pickedDateStore.toISOString())
     setEntryItems(data)
   }, [pickedDateStore])
 
