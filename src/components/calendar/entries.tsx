@@ -1,40 +1,69 @@
 "use client"
 
-import { getSpecificEntry } from "@/actions"
+import { deleteEntry, getSpecificEntries } from "@/actions"
 import { currentPickedDateStore } from "@/lib/stores"
 import { entryType } from "@/types/entryType"
-import { format } from "date-fns"
-import { FC, useEffect, useState } from "react"
+import { FC, useCallback, useEffect, useState } from "react"
 import NewEventButton from "./newEventButton"
 import { Button } from "../ui/button"
-import { Pencil } from "lucide-react"
+import { Pencil, Trash } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
 
 const Entries: FC = () => {
   const pickedDateStore = currentPickedDateStore((state) => state.date)
   const [entryItems, setEntryItems] = useState<entryType[]>()
+  const [entryExpanded, setEntryExpanded] = useState(false)
+
+  function handleDelete(id: number) {
+    deleteEntry(id)
+    fetchEntryData()
+  }
+
+  function handleArticleClick() {
+    setEntryExpanded(!entryExpanded)
+  }
+
+  const fetchEntryData = useCallback(async () => {
+    //@ts-ignore
+    const data = await getSpecificEntries(pickedDateStore!)
+    setEntryItems(data)
+  }, [pickedDateStore])
 
   useEffect(() => {
-    async function getEntryData() {
-      //@ts-ignore
-      const data = await getSpecificEntry(pickedDateStore!)
-      setEntryItems(data)
-    }
-    getEntryData()
-  }, [pickedDateStore])
+    fetchEntryData()
+  }, [pickedDateStore, fetchEntryData])
 
   return (
     <div className='flex flex-col items-center gap-4 m-4'>
-      <section className='p-4 rounded-lg w-full'>
-        <h2 className='text-2xl font-bold mb-4'>
-          {format(pickedDateStore!, "MMMM d, yyyy")}
+      <div className='flex justify-between items-center w-full px-4'>
+        <h2 className='text-2xl font-bold self-start '>
+          {entryItems && entryItems.length}{" "}
+          {entryItems && entryItems.length === 1 ? "event" : "events"} for today
         </h2>
+        <NewEventButton />
+      </div>
+      <section className='p-4 w-full overflow-scroll'>
         {entryItems && entryItems.length > 0 ? (
           <ul className='flex flex-col gap-4'>
             {entryItems.map((entry, index) => (
               <li key={index}>
                 <article className='bg-white p-4 rounded-md shadow flex justify-between items-center'>
-                  <div>
-                    <h3 className='text-xl font-semibold mb-2'>
+                  <div className='flex-1 min-w-0'>
+                    <div className='flex items-center mb-2'>
+                      {entry.userImage && (
+                        <Image
+                          src={entry.userImage}
+                          alt={entry.userName}
+                          className='w-8 h-8 rounded-full mr-2 object-cover'
+                          width={32}
+                          height={32}
+                        />
+                      )}
+                      <p className='text-sm mb-2'>{entry.userName}</p>
+                    </div>
+
+                    <h3 className='text-xl font-semibold'>
                       {entry.title}
                       {entry.time && (
                         <span className='ml-2 text-sm text-gray-500'>
@@ -42,11 +71,29 @@ const Entries: FC = () => {
                         </span>
                       )}
                     </h3>
-                    <p className='text-gray-600'>{entry.notes}</p>
+                    <p
+                      onClick={handleArticleClick}
+                      className={`text-gray-600 ${
+                        entryExpanded ? null : "truncate"
+                      }`}
+                    >
+                      {entry.notes}
+                    </p>
                   </div>
-                  <Button variant='outline' size='icon'>
-                    <Pencil />
-                  </Button>
+                  <div className='flex gap-2 ml-4'>
+                    <Button variant='outline' size='icon'>
+                      <Link href={`/calendar/edit/${entry.id}`}>
+                        <Pencil size={18} />
+                      </Link>
+                    </Button>
+                    <Button
+                      onClick={() => handleDelete(entry.id)}
+                      variant='outline'
+                      size='icon'
+                    >
+                      <Trash size={18} />
+                    </Button>
+                  </div>
                 </article>
               </li>
             ))}
@@ -55,7 +102,6 @@ const Entries: FC = () => {
           <p className='text-gray-500'>No entries for this date.</p>
         )}
       </section>
-      <NewEventButton></NewEventButton>
     </div>
   )
 }
