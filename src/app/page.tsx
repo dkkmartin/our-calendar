@@ -1,11 +1,5 @@
-import CalendarPicker from "@/components/calendar/calendarPicker"
-import Entries from "@/components/calendar/entries"
+import { redirect } from "next/navigation"
 
 export default function Home() {
-  return (
-    <section>
-      <CalendarPicker></CalendarPicker>
-      <Entries></Entries>
-    </section>
-  )
+  redirect("/calendar")
 }
