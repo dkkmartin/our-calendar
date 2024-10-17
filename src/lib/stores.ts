@@ -1,11 +1,11 @@
 import { create } from "zustand"
 
 type currentPickedDateType = {
-  date: Date
-  setDate: (newState: Date) => void
+  date: string
+  setDate: (newState: string) => void
 }
 
 export const currentPickedDateStore = create<currentPickedDateType>((set) => ({
-  date: new Date(),
-  setDate: (newState: Date) => set({ date: newState }),
+  date: new Date().toISOString().split("T")[0],
+  setDate: (newState: string) => set({ date: newState }),
 }))

@@ -30,8 +30,11 @@ export default function CalendarPicker() {
 
   const handleSelect = (newDate: Date | undefined) => {
     if (newDate) {
-      setPickedDateStore(newDate)
-      setCurrentMonth(startOfMonth(newDate))
+      const utcDate = new Date(
+        Date.UTC(newDate.getFullYear(), newDate.getMonth(), newDate.getDate())
+      )
+      setPickedDateStore(utcDate.toISOString().split("T")[0])
+      setCurrentMonth(startOfMonth(utcDate))
     }
   }
 

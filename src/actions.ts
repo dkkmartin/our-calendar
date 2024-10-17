@@ -41,10 +41,13 @@ export const createEntry = async (
   userName: string,
   userImage: string | null
 ) => {
+  const utcDate = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  )
   await db.insert(calendarTable).values({
     title: title,
     notes: notes,
-    date: date.toISOString(),
+    date: utcDate.toISOString().split("T")[0],
     time: time || null,
     userId: userId,
     userName: userName,
