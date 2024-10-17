@@ -4,4 +4,7 @@ export type entryType = {
   notes: string | null
   time: string | null
   date: string
+  userId: string
+  userName: string
+  userImage: string
 }

@@ -13,12 +13,21 @@ export const getAllEntries = async () => {
   return data
 }
 
-// Get specific entry from db
-export const getSpecificEntry = async (date: string) => {
+// Get specific entries from db
+export const getSpecificEntries = async (date: string) => {
   const data = await db
     .select()
     .from(calendarTable)
     .where(eq(calendarTable.date, date))
+  return data
+}
+
+// Get specific entry from db
+export const getSpecificEntry = async (id: number) => {
+  const data = await db
+    .select()
+    .from(calendarTable)
+    .where(eq(calendarTable.id, id))
   return data
 }
 
@@ -27,13 +36,19 @@ export const createEntry = async (
   title: string,
   notes: string,
   date: Date,
-  time: string
+  time: string,
+  userId: string,
+  userName: string,
+  userImage: string | null
 ) => {
   await db.insert(calendarTable).values({
     title: title,
     notes: notes,
     date: date.toISOString(),
     time: time || null,
+    userId: userId,
+    userName: userName,
+    userImage: userImage || "",
   })
 }
 
@@ -42,14 +57,14 @@ export const updateEntry = async (
   id: number,
   title: string,
   notes: string,
-  date: Date
+  time: string
 ) => {
   await db
     .update(calendarTable)
     .set({
       title: title,
       notes: notes,
-      date: date.toISOString(),
+      time: time || null,
     })
     .where(eq(calendarTable.id, id))
 }

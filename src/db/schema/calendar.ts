@@ -13,5 +13,8 @@ export const calendarTable = pgTable("entries", {
   notes: text("notes"),
   date: date("date").notNull(),
   time: time("time"),
+  userId: text("userId").notNull(),
+  userName: text("userName").notNull(),
+  userImage: text("userImage").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 })

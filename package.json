@@ -11,6 +11,7 @@
     "migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "@clerk/nextjs": "^5.7.3",
     "@hookform/resolvers": "^3.6.0",
     "@neondatabase/serverless": "^0.9.3",
     "@radix-ui/react-label": "^2.0.2",

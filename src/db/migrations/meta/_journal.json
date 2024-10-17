@@ -15,6 +15,20 @@
       "when": 1729033817403,
       "tag": "0001_bright_big_bertha",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1729168034584,
+      "tag": "0002_polite_captain_flint",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1729193197475,
+      "tag": "0003_sleepy_fallen_one",
+      "breakpoints": true
     }
   ]
 }
