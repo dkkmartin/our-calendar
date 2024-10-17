@@ -1,6 +1,6 @@
 "use client"
 
-import { createEntry } from "@/actions"
+import { updateEntry } from "@/actions"
 import { formSchema } from "@/validations/newCalendarEntry"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -18,60 +18,96 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import { entryType } from "@/types/entryType"
 
-export default function NewEvent({ date }: { date: string }) {
+export default function EditEvent({
+  id,
+  event,
+}: {
+  id: number
+  event: entryType
+}) {
   const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      notes: "",
-      date: new Date(date),
+      title: event.title,
+      notes: event.notes ?? "",
+      date: new Date(event.date),
+      time: event.time ?? "",
     },
   })
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    createEntry(values.title, values.notes ? values.notes : "", values.date)
+    updateEntry(
+      id,
+      values.title,
+      values.notes ? values.notes : "",
+      values.time ?? ""
+    )
     form.reset({
       title: "",
       notes: "",
+      time: "",
     })
-    router.push("/")
+    router.push("/calendar")
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-        <FormField
-          control={form.control}
-          name='title'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormDescription>The title of the event.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='notes'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Notes</FormLabel>
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-              <FormDescription>Any notes for the event.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type='submit'>Submit</Button>
-      </form>
-    </Form>
+    <section className='p-4'>
+      <h1 className='text-2xl font-bold mb-4'>Create new event</h1>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+          <FormField
+            control={form.control}
+            name='title'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormDescription>The title of the event.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='notes'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Notes</FormLabel>
+                <FormControl>
+                  <Textarea {...field} />
+                </FormControl>
+                <FormDescription>Any notes for the event.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='time'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Time</FormLabel>
+                <FormControl>
+                  <Input {...field} type='time' />
+                </FormControl>
+                <FormDescription>The time of the event.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button className='w-full' type='submit'>
+            Submit
+          </Button>
+        </form>
+      </Form>
+    </section>
   )
 }
