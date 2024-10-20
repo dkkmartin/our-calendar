@@ -29,6 +29,13 @@
       "when": 1729193197475,
       "tag": "0003_sleepy_fallen_one",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1729448874729,
+      "tag": "0004_talented_rumiko_fujikawa",
+      "breakpoints": true
     }
   ]
 }
