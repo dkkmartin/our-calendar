@@ -1,4 +1,6 @@
 "use client"
+import NavigationBar from "@/components/navbar/navigationBar"
+import { Toaster } from "@/components/ui/sonner"
 import { currentPickedDateStore } from "@/lib/stores"
 import { SignedIn, UserButton } from "@clerk/nextjs"
 import { format } from "date-fns"
@@ -18,7 +20,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           />
         </SignedIn>
       </header>
-      <main>{children}</main>
+      <main className='pb-16'>{children}</main>
+      <Toaster />
+      <NavigationBar />
     </>
   )
 }
