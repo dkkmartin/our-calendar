@@ -28,6 +28,7 @@ export default function NewEvent({ date }: { date: string }) {
       title: "",
       notes: "",
       date: new Date(date),
+      time: "",
     },
   })
   const { user } = useUser()
@@ -85,7 +86,7 @@ export default function NewEvent({ date }: { date: string }) {
               <FormItem>
                 <FormLabel>Time</FormLabel>
                 <FormControl>
-                  <Input {...field} type='time' />
+                  <Input {...field} type='time' value={field.value || ""} />
                 </FormControl>
                 <FormDescription>The time of the event.</FormDescription>
                 <FormMessage />
