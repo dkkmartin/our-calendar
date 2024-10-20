@@ -26,7 +26,9 @@ const Entries: FC = () => {
 
   const fetchEntryData = useCallback(async () => {
     const data = await getSpecificEntries(pickedDateStore)
-    setEntryItems(data)
+    if (data.success) {
+      setEntryItems(data.data)
+    }
   }, [pickedDateStore])
 
   useEffect(() => {
@@ -80,11 +82,11 @@ const Entries: FC = () => {
                     </p>
                   </div>
                   <div className='flex gap-2 ml-4'>
-                    <Button variant='outline' size='icon'>
-                      <Link href={`/calendar/edit/${entry.id}`}>
+                    <Link href={`/calendar/edit/${entry.id}`}>
+                      <Button variant='outline' size='icon'>
                         <Pencil size={18} />
-                      </Link>
-                    </Button>
+                      </Button>
+                    </Link>
                     <Button
                       onClick={() => handleDelete(entry.id)}
                       variant='outline'
