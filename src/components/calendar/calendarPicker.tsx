@@ -18,7 +18,9 @@ export default function CalendarPicker() {
   useEffect(() => {
     async function getEntries() {
       const data = await getAllEntries()
-      setEntries(data)
+      if (data.success) {
+        setEntries(data.data)
+      }
     }
     getEntries()
   }, [])
