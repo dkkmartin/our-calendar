@@ -36,7 +36,6 @@ export default function NewEvent({ date }: { date: string }) {
     },
   })
   const { user } = useUser()
-  console.log(user)
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     createEntry(

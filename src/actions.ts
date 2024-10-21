@@ -5,7 +5,6 @@ import { calendarTable } from "@/db/schema/calendar"
 import { and, asc, eq, or } from "drizzle-orm"
 import webpush from "web-push"
 import { notificationTable } from "./db/schema/notification"
-import { convertToUTCDate } from "./lib/utils"
 
 webpush.setVapidDetails(
   "mailto:martin@martinbruun.dk",
@@ -113,7 +112,15 @@ export const updateEntry = async (
   notificationEnabled: boolean
 ) => {
   try {
-    const utcNotificationDate = convertToUTCDate(notificationDate)
+    const utcNotificationDate = notificationDate
+      ? new Date(
+          Date.UTC(
+            notificationDate.getFullYear(),
+            notificationDate.getMonth(),
+            notificationDate.getDate()
+          )
+        )
+      : null
 
     await db
       .update(calendarTable)
@@ -121,7 +128,9 @@ export const updateEntry = async (
         title: title,
         notes: notes,
         time: time || null,
-        notificationDate: utcNotificationDate || null,
+        notificationDate: utcNotificationDate
+          ? utcNotificationDate.toISOString().split("T")[0]
+          : null,
         notificationEnabled: notificationEnabled,
       })
       .where(eq(calendarTable.id, id))
