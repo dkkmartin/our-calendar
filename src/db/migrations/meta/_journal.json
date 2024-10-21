@@ -36,6 +36,20 @@
       "when": 1729448874729,
       "tag": "0004_talented_rumiko_fujikawa",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1729523742550,
+      "tag": "0005_unknown_thunderbolts",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1729524583024,
+      "tag": "0006_motionless_bloodaxe",
+      "breakpoints": true
     }
   ]
 }
