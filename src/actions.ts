@@ -2,9 +2,10 @@
 
 import db from "@/db/drizzle"
 import { calendarTable } from "@/db/schema/calendar"
-import { and, asc, eq } from "drizzle-orm"
+import { and, asc, eq, or } from "drizzle-orm"
 import webpush from "web-push"
 import { notificationTable } from "./db/schema/notification"
+import { convertToUTCDate } from "./lib/utils"
 
 webpush.setVapidDetails(
   "mailto:martin@martinbruun.dk",
@@ -63,6 +64,8 @@ export const createEntry = async (
   notes: string,
   date: Date,
   time: string,
+  notificationDate: Date | null,
+  notificationEnabled: boolean,
   userId: string,
   userName: string,
   userImage: string | null
@@ -71,11 +74,24 @@ export const createEntry = async (
     const utcDate = new Date(
       Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
     )
+    const utcNotificationDate = notificationDate
+      ? new Date(
+          Date.UTC(
+            notificationDate.getFullYear(),
+            notificationDate.getMonth(),
+            notificationDate.getDate()
+          )
+        )
+      : null
     await db.insert(calendarTable).values({
       title: title,
       notes: notes,
       date: utcDate.toISOString().split("T")[0],
       time: time || null,
+      notificationDate: utcNotificationDate
+        ? utcNotificationDate.toISOString().split("T")[0]
+        : null,
+      notificationEnabled: notificationEnabled,
       userId: userId,
       userName: userName,
       userImage: userImage || "",
@@ -92,15 +108,21 @@ export const updateEntry = async (
   id: number,
   title: string,
   notes: string,
-  time: string
+  time: string,
+  notificationDate: Date | null,
+  notificationEnabled: boolean
 ) => {
   try {
+    const utcNotificationDate = convertToUTCDate(notificationDate)
+
     await db
       .update(calendarTable)
       .set({
         title: title,
         notes: notes,
         time: time || null,
+        notificationDate: utcNotificationDate || null,
+        notificationEnabled: notificationEnabled,
       })
       .where(eq(calendarTable.id, id))
     return { success: true }
@@ -185,7 +207,6 @@ export async function getSubscription(userId: string) {
       .select()
       .from(notificationTable)
       .where(eq(notificationTable.userId, userId))
-
     if (subscriptions.length === 0) return null
 
     return subscriptions.map((sub) => ({

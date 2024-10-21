@@ -19,3 +19,13 @@ export function urlBase64ToUint8Array(base64String: string) {
   }
   return outputArray
 }
+
+export function convertToUTCDate(date: Date | null): string | null {
+  if (!date) return null
+
+  const utcDate = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  )
+
+  return utcDate.toISOString().split("T")[0]
+}

@@ -5,6 +5,7 @@ import {
   timestamp,
   date,
   time,
+  boolean,
 } from "drizzle-orm/pg-core"
 
 export const calendarTable = pgTable("entries", {
@@ -17,4 +18,6 @@ export const calendarTable = pgTable("entries", {
   userName: text("userName").notNull(),
   userImage: text("userImage").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
+  notificationDate: date("notificationDate"),
+  notificationEnabled: boolean("notificationEnabled").notNull().default(false),
 })

@@ -19,6 +19,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
+import { Switch } from "../ui/switch"
+import { DatePicker } from "./datePicker"
 
 export default function NewEvent({ date }: { date: string }) {
   const router = useRouter()
@@ -29,9 +31,12 @@ export default function NewEvent({ date }: { date: string }) {
       notes: "",
       date: new Date(date),
       time: "",
+      notificationEnabled: false,
+      notificationDate: undefined,
     },
   })
   const { user } = useUser()
+  console.log(user)
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     createEntry(
@@ -39,7 +44,9 @@ export default function NewEvent({ date }: { date: string }) {
       values.notes ?? "",
       values.date,
       values.time ?? "",
-      user?.primaryEmailAddressId ?? "",
+      values.notificationDate ?? null,
+      values.notificationEnabled,
+      user?.id ?? "",
       user?.fullName ?? "",
       user?.imageUrl ?? ""
     )
@@ -93,6 +100,45 @@ export default function NewEvent({ date }: { date: string }) {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name='notificationEnabled'
+            render={({ field }) => (
+              <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
+                <div className='space-y-0.5'>
+                  <FormLabel className='text-base'>
+                    Enable Notification
+                  </FormLabel>
+                  <FormDescription>
+                    Receive a notification for this event
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          {form.watch("notificationEnabled") && (
+            <FormField
+              control={form.control}
+              name='notificationDate'
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
+                  <FormLabel>Notification Date</FormLabel>
+                  <DatePicker date={field.value} setDate={field.onChange} />
+                  <FormDescription>
+                    Choose when to receive the notification
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           <Button className='w-full' type='submit'>
             Submit
           </Button>

@@ -7,4 +7,6 @@ export const formSchema = z.object({
   notes: z.string().optional(),
   time: z.string().optional(),
   date: z.date(),
+  notificationEnabled: z.boolean(),
+  notificationDate: z.date().optional(),
 })
