@@ -179,13 +179,43 @@ export async function subscribeUser(
         : undefined,
     }
 
-    await db.insert(notificationTable).values({
-      userId,
-      userName,
-      endpoint: subscription.endpoint,
-      expirationTime: subscription.expirationTime,
-      keys: subscription.keys ? JSON.stringify(subscription.keys) : null,
-    })
+    // Check if this exact subscription already exists
+    const existingSub = await db
+      .select()
+      .from(notificationTable)
+      .where(
+        and(
+          eq(notificationTable.userId, userId),
+          eq(notificationTable.endpoint, subscription.endpoint)
+        )
+      )
+      .limit(1)
+
+    if (existingSub.length === 0) {
+      // Only insert if no existing subscription found
+      await db.insert(notificationTable).values({
+        userId,
+        userName,
+        endpoint: subscription.endpoint,
+        expirationTime: subscription.expirationTime,
+        keys: subscription.keys ? JSON.stringify(subscription.keys) : null,
+      })
+    } else {
+      // Optionally update the existing subscription if needed
+      await db
+        .update(notificationTable)
+        .set({
+          userName,
+          expirationTime: subscription.expirationTime,
+          keys: subscription.keys ? JSON.stringify(subscription.keys) : null,
+        })
+        .where(
+          and(
+            eq(notificationTable.userId, userId),
+            eq(notificationTable.endpoint, subscription.endpoint)
+          )
+        )
+    }
     return { success: true }
   } catch (error) {
     console.error("Error subscribing user:", error)
@@ -255,7 +285,7 @@ export async function sendNotification(
   const subscriptions = await getSubscription(userId)
   if (!subscriptions || subscriptions.length === 0) {
     console.error("No subscriptions found for user:", userId)
-    throw new Error("No subscription available")
+    return { success: false, error: "No subscription available" }
   }
 
   const results = await Promise.all(
@@ -267,7 +297,10 @@ export async function sendNotification(
           !subscription.keys.p256dh
         ) {
           console.error("Invalid subscription keys:", subscription.keys)
-          throw new Error("Subscription is missing required keys")
+          return {
+            success: false,
+            error: "Subscription is missing required keys",
+          }
         }
 
         await webpush.sendNotification(
