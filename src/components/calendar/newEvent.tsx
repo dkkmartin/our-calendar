@@ -21,7 +21,8 @@ import { useRouter } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
 import { Switch } from "../ui/switch"
 import { DatePicker } from "./datePicker"
-import { parseISO, format } from "date-fns"
+import { format } from "date-fns"
+import { toast } from "sonner"
 
 export default function NewEvent({ date }: { date: string }) {
   const router = useRouter()
@@ -38,12 +39,12 @@ export default function NewEvent({ date }: { date: string }) {
   })
   const { user } = useUser()
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const formattedDate = format(values.date, "yyyy-MM-dd")
     const formattedNotificationDate = values.notificationDate
       ? format(values.notificationDate, "yyyy-MM-dd")
       : null
-    createEntry(
+    const res = await createEntry(
       values.title,
       values.notes ?? "",
       formattedDate,
@@ -54,7 +55,12 @@ export default function NewEvent({ date }: { date: string }) {
       user?.fullName ?? "",
       user?.imageUrl ?? ""
     )
-    router.push("/calendar")
+    if (res.success) {
+      router.push("/calendar")
+      toast.success("Event created successfully")
+    } else {
+      toast.error("Failed to create event")
+    }
   }
 
   return (

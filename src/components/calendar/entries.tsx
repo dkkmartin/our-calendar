@@ -6,18 +6,29 @@ import { entryType } from "@/types/entryType"
 import { FC, useCallback, useEffect, useState } from "react"
 import NewEventButton from "./newEventButton"
 import { Button } from "../ui/button"
-import { Pencil, Trash } from "lucide-react"
+import { Loader2, Pencil, Trash } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { toast } from "sonner"
+import { useAutoAnimate } from "@formkit/auto-animate/react"
 
 const Entries: FC = () => {
   const pickedDateStore = currentPickedDateStore((state) => state.date)
   const [entryItems, setEntryItems] = useState<entryType[]>()
   const [entryExpanded, setEntryExpanded] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [parent] = useAutoAnimate()
 
-  function handleDelete(id: number) {
-    deleteEntry(id)
-    fetchEntryData()
+  async function handleDelete(id: number) {
+    setLoading(true)
+    const res = await deleteEntry(id)
+    if (res.success) {
+      fetchEntryData()
+      toast.success("Event deleted successfully")
+    } else {
+      toast.error("Failed to delete event")
+    }
+    setLoading(false)
   }
 
   function handleArticleClick() {
@@ -37,19 +48,23 @@ const Entries: FC = () => {
 
   return (
     <div className='flex flex-col items-center gap-4 m-4'>
-      <div className='flex justify-between items-center w-full px-4'>
-        <h2 className='text-2xl font-bold self-start '>
-          {entryItems && entryItems.length}{" "}
-          {entryItems && entryItems.length === 1 ? "event" : "events"} for today
-        </h2>
+      <div className='flex justify-between w-full items-center px-4'>
+        {entryItems && entryItems.length > 0 ? (
+          <h2 className='text-2xl font-bold'>
+            {entryItems.length} {entryItems.length === 1 ? "event" : "events"}{" "}
+            for today
+          </h2>
+        ) : (
+          <h2 className='text-2xl font-bold'>Create your first event</h2>
+        )}
         <NewEventButton />
       </div>
       <section className='p-4 w-full overflow-scroll'>
         {entryItems && entryItems.length > 0 ? (
-          <ul className='flex flex-col gap-4'>
+          <ul ref={parent} className='flex flex-col gap-4'>
             {entryItems.map((entry, index) => (
               <li key={index}>
-                <article className='bg-white p-4 rounded-md shadow flex justify-between items-center'>
+                <article className='bg-white dark:bg-secondary/25 dark:border dark:border-white/30 p-4 rounded-md shadow flex justify-between items-center'>
                   <div className='flex-1 min-w-0'>
                     <div className='flex items-center mb-2'>
                       {entry.userImage && (
@@ -74,7 +89,7 @@ const Entries: FC = () => {
                     </h3>
                     <p
                       onClick={handleArticleClick}
-                      className={`text-gray-600 ${
+                      className={`text-gray-600 dark:text-white/75 ${
                         entryExpanded ? null : "truncate"
                       }`}
                     >
@@ -83,16 +98,26 @@ const Entries: FC = () => {
                   </div>
                   <div className='flex gap-2 ml-4'>
                     <Link href={`/calendar/edit/${entry.id}`}>
-                      <Button variant='outline' size='icon'>
+                      <Button
+                        variant='outline'
+                        size='icon'
+                        className='dark:bg-secondary dark:border-white'
+                      >
                         <Pencil size={18} />
                       </Button>
                     </Link>
                     <Button
+                      className='dark:bg-secondary dark:border-white'
                       onClick={() => handleDelete(entry.id)}
                       variant='outline'
                       size='icon'
+                      disabled={loading}
                     >
-                      <Trash size={18} />
+                      {loading ? (
+                        <Loader2 className='animate-spin text-white' />
+                      ) : (
+                        <Trash size={18} />
+                      )}
                     </Button>
                   </div>
                 </article>
@@ -100,7 +125,7 @@ const Entries: FC = () => {
             ))}
           </ul>
         ) : (
-          <p className='text-gray-500'>No entries for this date.</p>
+          <p className='text-gray-500'>No events for this date.</p>
         )}
       </section>
     </div>

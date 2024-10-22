@@ -22,6 +22,7 @@ import { entryType } from "@/types/entryType"
 import { DatePicker } from "./datePicker"
 import { Switch } from "../ui/switch"
 import { format, parseISO } from "date-fns"
+import { toast } from "sonner"
 
 export default function EditEvent({
   id,
@@ -45,11 +46,11 @@ export default function EditEvent({
     },
   })
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const formattedNotificationDate = values.notificationDate
       ? format(values.notificationDate, "yyyy-MM-dd")
       : null
-    updateEntry(
+    const res = await updateEntry(
       id,
       values.title,
       values.notes ? values.notes : "",
@@ -57,7 +58,12 @@ export default function EditEvent({
       formattedNotificationDate,
       values.notificationEnabled
     )
-    router.push("/calendar")
+    if (res.success) {
+      router.push("/calendar")
+      toast.success("Event updated successfully")
+    } else {
+      toast.error("Failed to update event")
+    }
   }
 
   return (
