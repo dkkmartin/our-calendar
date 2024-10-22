@@ -2,7 +2,6 @@
 
 import {
   checkUserSubscription,
-  sendNotification,
   subscribeUser,
   unsubscribeUser,
 } from "@/actions"
@@ -23,7 +22,6 @@ function PushNotificationManager({ onClick }: PushNotificationManagerProps) {
     null
   )
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState("")
   const { user } = useUser()
 
   const checkSubscriptionStatus = useCallback(async () => {
@@ -101,19 +99,12 @@ function PushNotificationManager({ onClick }: PushNotificationManagerProps) {
     setLoading(false)
   }
 
-  async function sendTestNotification(title: string) {
-    if (subscription) {
-      await sendNotification(user?.id ?? "", title, message)
-      setMessage("")
-    }
-  }
-
   if (!isSupported) {
     return null
   }
 
   return (
-    <div className='bg-white shadow-lg rounded-lg p-4 max-w-sm w-full border'>
+    <div className='bg-white dark:bg-inherit dark:border shadow-lg rounded-lg p-4 max-w-sm w-full'>
       <h3 className='text-lg font-semibold mb-2'>Push Notifications</h3>
       {subscription ? (
         <div className='space-y-2'>
@@ -130,21 +121,6 @@ function PushNotificationManager({ onClick }: PushNotificationManagerProps) {
               Unsubscribe
             </Button>
           )}
-          <div className='flex space-x-2'>
-            <input
-              type='text'
-              placeholder='Enter notification message'
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className='flex-grow border rounded px-2 py-1 text-sm'
-            />
-            <Button
-              onClick={() => sendTestNotification(message)}
-              className='bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors'
-            >
-              Send Test
-            </Button>
-          </div>
         </div>
       ) : (
         <div className='space-y-2'>
