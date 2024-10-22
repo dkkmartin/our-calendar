@@ -12,6 +12,7 @@ import PushNotificationManager from "../user/pushNotificationManager"
 import { Separator } from "../ui/separator"
 import { Button } from "../ui/button"
 import { toast } from "sonner"
+import { ThemeToggler } from "../theme/theme-toggler"
 
 export default function SettingsSheet() {
   return (
@@ -25,9 +26,7 @@ export default function SettingsSheet() {
           <Separator className='my-4' />
         </SheetHeader>
         <div className='py-6 flex flex-col gap-4'>
-          <Button variant='outline' onClick={() => toast.success("Subscribed")}>
-            Test
-          </Button>
+          <ThemeToggler />
           <PushNotificationManager />
         </div>
       </SheetContent>
