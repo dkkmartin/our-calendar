@@ -50,7 +50,7 @@ export default function CalendarPicker() {
     const touchEndX = e.changedTouches[0].clientX
     const diff = touchStartX.current - touchEndX
 
-    if (Math.abs(diff) > 50) {
+    if (Math.abs(diff) > 150) {
       // Threshold for swipe
       if (diff > 0) {
         // Swipe left, go to next month
