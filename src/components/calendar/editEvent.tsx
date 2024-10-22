@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation"
 import { entryType } from "@/types/entryType"
 import { DatePicker } from "./datePicker"
 import { Switch } from "../ui/switch"
+import { format, parseISO } from "date-fns"
 
 export default function EditEvent({
   id,
@@ -35,29 +36,27 @@ export default function EditEvent({
     defaultValues: {
       title: event.title,
       notes: event.notes ?? "",
-      date: new Date(event.date),
+      date: parseISO(event.date),
       time: event.time ?? "",
       notificationEnabled: event.notificationEnabled ?? false,
       notificationDate: event.notificationDate
-        ? new Date(event.notificationDate)
+        ? parseISO(event.notificationDate)
         : undefined,
     },
   })
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    const formattedNotificationDate = values.notificationDate
+      ? format(values.notificationDate, "yyyy-MM-dd")
+      : null
     updateEntry(
       id,
       values.title,
       values.notes ? values.notes : "",
       values.time ?? "",
-      values.notificationDate ?? null,
+      formattedNotificationDate,
       values.notificationEnabled
     )
-    form.reset({
-      title: "",
-      notes: "",
-      time: "",
-    })
     router.push("/calendar")
   }
 

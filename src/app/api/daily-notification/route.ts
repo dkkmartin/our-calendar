@@ -2,12 +2,15 @@ import { sendNotification } from "@/actions"
 import db from "@/db/drizzle"
 import { calendarTable } from "@/db/schema/calendar"
 import { and, eq } from "drizzle-orm"
+import { startOfDay, format } from "date-fns"
 
 export async function GET(req: Request) {
   const authHeader = req.headers.get("Authorization")
   if (authHeader !== process.env.CRON_SECRET) {
     return Response.json({ error: "Unauthorized" }, { status: 401 })
   }
+
+  const today = startOfDay(new Date())
 
   try {
     const entries = await db
@@ -16,10 +19,7 @@ export async function GET(req: Request) {
       .where(
         and(
           eq(calendarTable.notificationEnabled, true),
-          eq(
-            calendarTable.notificationDate,
-            new Date().toISOString().split("T")[0]
-          )
+          eq(calendarTable.notificationDate, format(today, "yyyy-MM-dd"))
         )
       )
 

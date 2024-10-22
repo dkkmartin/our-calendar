@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
 import { Switch } from "../ui/switch"
 import { DatePicker } from "./datePicker"
+import { parseISO, format } from "date-fns"
 
 export default function NewEvent({ date }: { date: string }) {
   const router = useRouter()
@@ -38,12 +39,16 @@ export default function NewEvent({ date }: { date: string }) {
   const { user } = useUser()
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    const formattedDate = format(values.date, "yyyy-MM-dd")
+    const formattedNotificationDate = values.notificationDate
+      ? format(values.notificationDate, "yyyy-MM-dd")
+      : null
     createEntry(
       values.title,
       values.notes ?? "",
-      values.date,
+      formattedDate,
       values.time ?? "",
-      values.notificationDate ?? null,
+      formattedNotificationDate,
       values.notificationEnabled,
       user?.id ?? "",
       user?.fullName ?? "",

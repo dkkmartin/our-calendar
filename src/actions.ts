@@ -2,7 +2,8 @@
 
 import db from "@/db/drizzle"
 import { calendarTable } from "@/db/schema/calendar"
-import { and, asc, eq, or } from "drizzle-orm"
+import { and, asc, eq } from "drizzle-orm"
+import { parseISO, startOfDay, format } from "date-fns"
 import webpush from "web-push"
 import { notificationTable } from "./db/schema/notification"
 
@@ -61,34 +62,26 @@ export const getSpecificEntry = async (id: number) => {
 export const createEntry = async (
   title: string,
   notes: string,
-  date: Date,
+  date: string,
   time: string,
-  notificationDate: Date | null,
+  notificationDate: string | null,
   notificationEnabled: boolean,
   userId: string,
   userName: string,
   userImage: string | null
 ) => {
   try {
-    const utcDate = new Date(
-      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-    )
+    const utcDate = startOfDay(date)
     const utcNotificationDate = notificationDate
-      ? new Date(
-          Date.UTC(
-            notificationDate.getFullYear(),
-            notificationDate.getMonth(),
-            notificationDate.getDate()
-          )
-        )
+      ? startOfDay(notificationDate)
       : null
     await db.insert(calendarTable).values({
       title: title,
       notes: notes,
-      date: utcDate.toISOString().split("T")[0],
+      date: format(utcDate, "yyyy-MM-dd"),
       time: time || null,
       notificationDate: utcNotificationDate
-        ? utcNotificationDate.toISOString().split("T")[0]
+        ? format(utcNotificationDate, "yyyy-MM-dd")
         : null,
       notificationEnabled: notificationEnabled,
       userId: userId,
@@ -108,18 +101,12 @@ export const updateEntry = async (
   title: string,
   notes: string,
   time: string,
-  notificationDate: Date | null,
+  notificationDate: string | null,
   notificationEnabled: boolean
 ) => {
   try {
     const utcNotificationDate = notificationDate
-      ? new Date(
-          Date.UTC(
-            notificationDate.getFullYear(),
-            notificationDate.getMonth(),
-            notificationDate.getDate()
-          )
-        )
+      ? startOfDay(notificationDate)
       : null
 
     await db
@@ -129,7 +116,7 @@ export const updateEntry = async (
         notes: notes,
         time: time || null,
         notificationDate: utcNotificationDate
-          ? utcNotificationDate.toISOString().split("T")[0]
+          ? format(utcNotificationDate, "yyyy-MM-dd")
           : null,
         notificationEnabled: notificationEnabled,
       })
