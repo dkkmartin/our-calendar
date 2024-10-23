@@ -1,41 +1,32 @@
 "use client"
 
 import { Calendar } from "@/components/ui/calendar"
-import { currentPickedDateStore } from "@/lib/stores"
+import { currentPickedDateStore, useEntriesStore } from "@/lib/stores"
 import { useEffect, useState } from "react"
-import { entryType } from "@/types/entryType"
-import { getAllEntries } from "@/actions"
-import { useRef, TouchEvent, useMemo } from "react"
-import { addMonths, startOfMonth, subMonths } from "date-fns"
+import { useRef, TouchEvent } from "react"
+import {
+  addMonths,
+  format,
+  startOfDay,
+  startOfMonth,
+  subMonths,
+} from "date-fns"
 
 export default function CalendarPicker() {
   const pickedDateStore = currentPickedDateStore((state) => state.date)
   const setPickedDateStore = currentPickedDateStore((state) => state.setDate)
-  const [entries, setEntries] = useState<entryType[]>()
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const touchStartX = useRef<number | null>(null)
+  const eventDates = useEntriesStore((state) => state.eventDates)
 
   useEffect(() => {
-    async function getEntries() {
-      const data = await getAllEntries()
-      if (data.success) {
-        setEntries(data.data)
-      }
-    }
-    getEntries()
+    useEntriesStore.getState().fetchEntries()
   }, [])
-
-  useEffect(() => {
-    if (!pickedDateStore) return
-    setCurrentMonth(startOfMonth(new Date(pickedDateStore)))
-  }, [pickedDateStore])
 
   const handleSelect = (newDate: Date | undefined) => {
     if (newDate) {
-      const utcDate = new Date(
-        Date.UTC(newDate.getFullYear(), newDate.getMonth(), newDate.getDate())
-      )
-      setPickedDateStore(utcDate.toISOString().split("T")[0])
+      const utcDate = startOfDay(newDate)
+      setPickedDateStore(format(utcDate, "yyyy-MM-dd"))
       setCurrentMonth(startOfMonth(utcDate))
     }
   }
@@ -50,7 +41,7 @@ export default function CalendarPicker() {
     const touchEndX = e.changedTouches[0].clientX
     const diff = touchStartX.current - touchEndX
 
-    if (Math.abs(diff) > 150) {
+    if (Math.abs(diff) > 100) {
       // Threshold for swipe
       if (diff > 0) {
         // Swipe left, go to next month
@@ -63,10 +54,6 @@ export default function CalendarPicker() {
 
     touchStartX.current = null
   }
-
-  const eventDates = entries?.map((entry) =>
-    new Date(entry.date).toDateString()
-  )
 
   return (
     <section
@@ -81,13 +68,13 @@ export default function CalendarPicker() {
         month={currentMonth}
         onMonthChange={setCurrentMonth}
         modifiers={{
-          event: (date) => eventDates?.includes(date.toDateString()) || false,
+          event: (date) => eventDates.includes(date.toDateString()),
         }}
         components={{
           DayContent: ({ date }) => (
             <div className='relative w-full h-full flex items-center justify-center'>
               <span>{date.getDate()}</span>
-              {eventDates?.includes(date.toDateString()) && (
+              {eventDates.includes(date.toDateString()) && (
                 <div className='absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full p-1' />
               )}
             </div>

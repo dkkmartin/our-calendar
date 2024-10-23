@@ -1,7 +1,7 @@
 "use client"
 
 import { deleteEntry, getSpecificEntries } from "@/actions"
-import { currentPickedDateStore } from "@/lib/stores"
+import { currentPickedDateStore, useEntriesStore } from "@/lib/stores"
 import { entryType } from "@/types/entryType"
 import { FC, useCallback, useEffect, useState } from "react"
 import NewEventButton from "./newEventButton"
@@ -18,12 +18,14 @@ const Entries: FC = () => {
   const [entryExpanded, setEntryExpanded] = useState(false)
   const [loading, setLoading] = useState(false)
   const [parent] = useAutoAnimate()
+  const fetchEntries = useEntriesStore((state) => state.fetchEntries)
 
   async function handleDelete(id: number) {
     setLoading(true)
     const res = await deleteEntry(id)
     if (res.success) {
       fetchEntryData()
+      fetchEntries()
       toast.success("Event deleted successfully")
     } else {
       toast.error("Failed to delete event")
