@@ -68,7 +68,7 @@ export default function EditEvent({
 
   return (
     <section className='p-4'>
-      <h1 className='text-2xl font-bold mb-4'>Create new event</h1>
+      <h1 className='text-2xl font-bold mb-4'>Edit event</h1>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
