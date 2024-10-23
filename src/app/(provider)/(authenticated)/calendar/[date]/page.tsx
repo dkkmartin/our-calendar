@@ -1,12 +1,13 @@
 import NewEvent from "@/components/calendar/newEvent"
 
 interface CalendarAddProps {
-  params: {
+  params: Promise<{
     date: string
-  }
+  }>
 }
 
-export default function CalendarAdd({ params }: CalendarAddProps) {
+export default async function CalendarAdd(props: CalendarAddProps) {
+  const params = await props.params;
   return (
     <section>
       <NewEvent date={params.date}></NewEvent>

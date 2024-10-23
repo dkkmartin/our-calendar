@@ -2,12 +2,13 @@ import { getSpecificEntry } from "@/actions"
 import EditEvent from "@/components/calendar/editEvent"
 
 interface CalendarEditProps {
-  params: {
+  params: Promise<{
     id: number
-  }
+  }>
 }
 
-export default async function CalendarEdit({ params }: CalendarEditProps) {
+export default async function CalendarEdit(props: CalendarEditProps) {
+  const params = await props.params;
   const event = await getSpecificEntry(params.id)
   const eventData = event.data?.[0]
   if (!eventData) {
