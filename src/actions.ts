@@ -3,7 +3,7 @@
 import db from "@/db/drizzle"
 import { calendarTable } from "@/db/schema/calendar"
 import { and, asc, eq } from "drizzle-orm"
-import { parseISO, startOfDay, format } from "date-fns"
+import { startOfDay, format } from "date-fns"
 import webpush from "web-push"
 import { notificationTable } from "./db/schema/notification"
 
