@@ -1,6 +1,6 @@
 # Our Calendar
 
-A collaborative calendar web application built with Next.js that helps you manage events and tasks with your team.
+A collaborative calendar web application built with Next.js that helps you manage events.
 
 ## Features
 
